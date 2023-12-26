@@ -2,4 +2,6 @@
 
 Visualization: Junye Wang
 
+Part I: Sihan Ren
+
 Simulation & Part II Task A Math Proof: Chuyan Zhou
