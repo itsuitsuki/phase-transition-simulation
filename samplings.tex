@@ -1,0 +1,99 @@
+\documentclass{article}
+\usepackage{algorithmicx, algpseudocode, algorithm}
+\usepackage{amsmath, amssymb, amsthm}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\begin{document}
+\begin{algorithm}
+    \caption{Metropolis-Hastings Sampling of Ising Model with spin configuration $\boldsymbol{\sigma}$}
+\begin{algorithmic}[1]
+    \Function{Metropolis-Hastings}{$\pi$, $Q$, $\boldsymbol\sigma_0$, $N$}
+    \Require{target distribution $\pi$, proposal distribution $Q$, initial state $\boldsymbol\sigma_0$, number of steps $N$}
+    \Ensure{samples from $\pi$}
+    \State $\boldsymbol\sigma \gets \boldsymbol\sigma_0$
+    \For{$t \gets 1$ to $N$}
+    \State $\boldsymbol\sigma' \sim Q(\boldsymbol\sigma'|\boldsymbol\sigma)$
+    \State $A\gets \min\left\{1, \frac{\pi(\boldsymbol\sigma')Q(\boldsymbol\sigma|\boldsymbol\sigma')}{\pi(\boldsymbol\sigma)Q(\boldsymbol\sigma'|\boldsymbol\sigma)}\right\}$ \Comment Acceptance probability
+    \State $u \sim \mathrm{Uniform}(0,1)$
+    \If{$u < A$}
+    \State $\boldsymbol\sigma \gets \boldsymbol\sigma'$
+    \EndIf
+    \EndFor
+    \State \Return $\boldsymbol\sigma$
+    \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Metropolis-Hastings Sampling of Ising Model with spin configuration $\boldsymbol{\sigma}$, plus saving samples every $L$ steps and warm-up steps $K$}
+\begin{algorithmic}[1]
+    \Function{Metropolis-Hastings-Save}{$\pi$, $Q$, $\boldsymbol\sigma_0$, $N$, $K$, $L$}
+    \Require{target distribution $\pi$, proposal distribution $Q$, initial state $\boldsymbol\sigma_0$, number of steps $N$, warm-up steps $K$, save steps $L$}
+    \Ensure{samples from $\pi$}
+    \State $\boldsymbol\sigma \gets \boldsymbol\sigma_0$
+    \State $K \gets \min\{K, N - 1\}$ \Comment Ensure feasibility of $K$
+    \State $S\gets \emptyset$ \Comment Initialize sample set
+    \For{$t \gets 1$ to $N$}
+    \State $\boldsymbol\sigma' \sim Q(\boldsymbol\sigma'|\boldsymbol\sigma)$
+    \State $A\gets \min\left\{1, \frac{\pi(\boldsymbol\sigma')Q(\boldsymbol\sigma|\boldsymbol\sigma')}{\pi(\boldsymbol\sigma)Q(\boldsymbol\sigma'|\boldsymbol\sigma)}\right\}$ \Comment Acceptance probability
+    \State $u \sim \mathrm{Uniform}(0,1)$
+    \If{$u < A$}
+    \State $\boldsymbol\sigma \gets \boldsymbol\sigma'$
+    \EndIf
+    \If {$t$ > $K$ and $t$ mod $L$ = 0}
+    \State Save $\boldsymbol\sigma$ as a sample to $S$
+    \EndIf
+    \EndFor
+    \State \Return $S$
+    \EndFunction
+\end{algorithmic}
+\end{algorithm}
+\begin{algorithm}
+    \caption{Gibbs Sampling of Ising Model with spin configuration $\boldsymbol{\sigma}$}
+\begin{algorithmic}[1]
+    \Function{Gibbs}{$\pi$, $\boldsymbol\sigma_0$, $N$}
+    \Require{target distribution $\pi$, initial state $\boldsymbol\sigma_0$, number of steps $N$}
+    \Ensure{samples from $\pi$}
+    \State $\boldsymbol\sigma \gets \boldsymbol\sigma_0$
+    \State $i \gets 1$
+    \For{$t \gets 1$ to $N$}
+    % \State $\sigma_t \sim P(\sigma_t|\boldsymbol\sigma_{-t})$ \Comment Sample $\sigma_t$ from conditional distribution
+    \State $\sigma_i \sim P(\sigma_i|\boldsymbol\sigma_{-i})$ \Comment Sample $\sigma_i$ from conditional distribution
+    \State $i \gets i + 1$
+    \If{$i > |\boldsymbol\sigma|$} \Comment $|\boldsymbol\sigma|$ is also the number of vertices
+    \State $i \gets 1$
+    \EndIf
+    \EndFor
+    \State \Return $\boldsymbol\sigma$
+    \EndFunction
+\end{algorithmic}
+\end{algorithm}
+\begin{algorithm}
+    \caption{Gibbs Sampling of Ising Model with spin configuration $\boldsymbol{\sigma}$, plus saving samples every $c$ sweepings and warm-up sweeping count $k$}
+\begin{algorithmic}[1]
+    \Function{Gibbs}{$\pi$, $\boldsymbol\sigma_0$, $N$}
+    \Require{target distribution $\pi$, initial state $\boldsymbol\sigma_0$, number of steps $N$}
+    \Ensure{samples from $\pi$}
+    \State $\boldsymbol\sigma \gets \boldsymbol\sigma_0$
+    \State $i \gets 1$
+    \State $k \gets \min\{k, {N - 1\over |\boldsymbol\sigma|}\}$ \Comment Ensure feasibility of $k$
+    \State $S\gets \emptyset$ \Comment Initialize sample set
+    \For{$t \gets 1$ to $N$}
+    \State $\sigma_i \sim P(\sigma_i|\boldsymbol\sigma_{-i})$ \Comment Sample $\sigma_i$ from conditional distribution
+    \State $i \gets i + 1$
+    \If{$i > |\boldsymbol\sigma|$} \Comment $|\boldsymbol\sigma|$ is also the number of vertices
+    \State $i \gets 1$
+    \EndIf
+    \If {$t$ > $k|\boldsymbol\sigma|$ and $t$ mod $c|\boldsymbol\sigma|$ = 0}
+    \State Save $\boldsymbol\sigma$ as a sample to $S$
+    \EndIf
+    \EndFor
+    \State \Return $S$
+    \EndFunction
+\end{algorithmic}
+\end{algorithm}
+\end{document}
