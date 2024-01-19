@@ -92,7 +92,7 @@ class IsingModel():
         save_steps = save_sweeping_interval*self.n**2
         i, j = 0, 0
         # for sweep, 
-        for step in range(steps):
+        for step in tqdm(range(steps)):
             # for each vertex, sample its spin value
             # sample the spin value of vertex (i,j)
             p = self._get_positive_conditional_probability(i,j)
