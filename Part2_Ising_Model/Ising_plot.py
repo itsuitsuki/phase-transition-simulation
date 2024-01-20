@@ -39,7 +39,7 @@ class IsingModel():
     
     def get_magnetization(self):
         '''Return the magnetization of the current lattice, but not used in the simulation'''
-        return np.sum(self._lattice_spin_config)/(self.n*self.n)
+        return abs(np.sum(self._lattice_spin_config)/(self.n*self.n))
     
     def _get_neighbor(self, i, j):
         '''Return the neighbor of vertex (i,j)'''
