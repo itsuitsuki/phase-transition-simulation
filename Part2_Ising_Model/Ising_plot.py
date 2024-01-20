@@ -112,16 +112,18 @@ class IsingModel():
 
     def simulate(self, warmup_sweepings, save_sweeping_interval, max_sweepings, temperature_range):
         '''Simulate the Ising model using Gibbs sampling over a range of temperatures'''
-        temperatures = np.linspace(temperature_range[0], temperature_range[1], 100)
+        temperatures = np.linspace(temperature_range[0], temperature_range[1], 200)
         energies = []
         magnetizations = []
 
         for temp in tqdm(temperatures, desc='Temperature Progress'):
+            print("Temperature: ", temp)
             self.beta = 1/temp
             self._lattice_spin_config = np.random.choice([-1, 1], size=(self.n, self.n))  # Reset initial configuration
             self.gibbs_sampling_max_sweepings(warmup_sweepings, save_sweeping_interval, max_sweepings)
             energies.append(self.get_energy())
             magnetizations.append(self.get_magnetization())
+            print("Magnetization: ", self.get_magnetization())
 
         self.plot_energy_and_magnetization(temperatures, energies, magnetizations)
 
@@ -147,5 +149,5 @@ class IsingModel():
         plt.show()
 
 # Example Usage
-ising_model = IsingModel(n=64, beta=0.8)
-ising_model.simulate(warmup_sweepings=5, save_sweeping_interval=1, max_sweepings=300, temperature_range=(2, 6))
+ising_model = IsingModel(n=20, beta=0.8)
+ising_model.simulate(warmup_sweepings=5, save_sweeping_interval=1, max_sweepings=300, temperature_range=(0.1, 6))
